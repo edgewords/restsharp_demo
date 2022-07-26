@@ -11,19 +11,15 @@ namespace com.edgewords.core.restsharp.demo
     [Binding]
     class Users_Steps
     {
-        static RestClientOptions options = new RestClientOptions("http://localhost:2002/api/"); //v107
-        RestClient client = new RestClient(options) { Authenticator = new HttpBasicAuthenticator("edge", "edgewords") }; //Added option for v107
+        static RestClientOptions options = new RestClientOptions("http://localhost:2002/api/"); //BaseUrl
+        RestClient client = new RestClient(options) { Authenticator = new HttpBasicAuthenticator("edge", "edgewords") }; //Set default authenticator
         RestResponse response; //v107+
 
         [When(@"I request user number (.*)")]
         public void WhenIRequestUserNumber(int p0)
         {
-            //set the API client
-
-            //client.Authenticator = new HttpBasicAuthenticator("edge", "edgewords");
-
             // create a request
-            RestRequest request = new RestRequest("users/1", Method.Get); //Method.GET, DataFormat.Json
+            RestRequest request = new RestRequest("users/1", Method.Get);
 
             //execute it and get a response
             response = client.Execute(request);
@@ -48,17 +44,15 @@ namespace com.edgewords.core.restsharp.demo
         public void GivenThatIAmNotAuthorized()
         {
             //remove basic auth from client
-            //client.RemoveDefaultParameter("Authorization"); //v106
             client.Authenticator = null;
         }
 
         [When(@"I get all users")]
         public void WhenIGetAllUsers()
         {
-            //client.BaseUrl = new Uri("http://localhost:2002/api/");
-            RestRequest request = new RestRequest("users", Method.Get); //Method.GET, DataFormat.Json
+            RestRequest request = new RestRequest("users", Method.Get);
 
-            //execute it and get a response
+            //execute it and get a response (synchronously)
             response = client.Execute(request);
         }
 
