@@ -5,25 +5,25 @@ using TechTalk.SpecFlow;
 using NUnit.Framework;
 using RestSharp;
 using RestSharp.Authenticators;
-using RestSharp.Serialization.Json;
 
 namespace com.edgewords.core.restsharp.demo
 {
     [Binding]
     class Users_Steps
     {
-        RestClient client = new RestClient();
-        IRestResponse response;
+        static RestClientOptions options = new RestClientOptions("http://localhost:2002/api/"); //v107
+        RestClient client = new RestClient(options) { Authenticator = new HttpBasicAuthenticator("edge", "edgewords") }; //Added option for v107
+        RestResponse response; //v107+
 
         [When(@"I request user number (.*)")]
         public void WhenIRequestUserNumber(int p0)
         {
             //set the API client
-            client.BaseUrl = new Uri("http://localhost:2002/api/");
-            client.Authenticator = new HttpBasicAuthenticator("edge", "edgewords");
+
+            //client.Authenticator = new HttpBasicAuthenticator("edge", "edgewords");
 
             // create a request
-            RestRequest request = new RestRequest("users/1", Method.GET, DataFormat.Json);
+            RestRequest request = new RestRequest("users/1", Method.Get); //Method.GET, DataFormat.Json
 
             //execute it and get a response
             response = client.Execute(request);
@@ -34,7 +34,7 @@ namespace com.edgewords.core.restsharp.demo
         {
             int status = (int)response.StatusCode;
             Console.WriteLine("Response Code: " + status);
-            Assert.True(status == iResp);  
+            Assert.True(status == iResp);
         }
 
         [Then(@"The item is an iPad")]
@@ -48,14 +48,15 @@ namespace com.edgewords.core.restsharp.demo
         public void GivenThatIAmNotAuthorized()
         {
             //remove basic auth from client
-            client.RemoveDefaultParameter("Authorization");
+            //client.RemoveDefaultParameter("Authorization"); //v106
+            client.Authenticator = null;
         }
 
         [When(@"I get all users")]
         public void WhenIGetAllUsers()
         {
-            client.BaseUrl = new Uri("http://localhost:2002/api/");
-            RestRequest request = new RestRequest("users", Method.GET, DataFormat.Json);
+            //client.BaseUrl = new Uri("http://localhost:2002/api/");
+            RestRequest request = new RestRequest("users", Method.Get); //Method.GET, DataFormat.Json
 
             //execute it and get a response
             response = client.Execute(request);
